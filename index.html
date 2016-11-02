@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Maps GeoJSON</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="map"></div>
+
+    <script>
+  var map;
+  function initMap() {
+    var location = {lat: 24.466667, lng: 54.366669};
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: location,
+          zoom: 8
+        });
+
+var script = document.createElement('script');
+    script.src = 'malls.json';
+    document.getElementsByTagName('head')[0].appendChild(script);
+    window.json_callback = function(results) {
+      for (var i = 0; i < results.features.length; i++) {
+        var coords = results.features[i].geometry.coordinates;
+        var latLng = new google.maps.LatLng(coords[1],coords[0]);
+        var prop1 = String(results.features[i].properties.property1);
+        add_marker(i, latLng, prop1);
+      }
+    }
+    function add_marker(id, point, text) {
+      var marker = new google.maps.Marker({map: map, position: point, animation: google.maps.Animation.DROP, clickable: true});
+      marker.addListener('click', toggleBounce);
+      var info_window = new google.maps.InfoWindow({
+          content: String
+      });
+          function toggleBounce() {
+        if (marker.getAnimation() !== null) {
+          marker.setAnimation(null);
+        } else {
+          marker.setAnimation(google.maps.Animation.BOUNCE);
+        }
+      }
+      google.maps.event.addListener(marker, 'click', function() {
+        info_window.open(this.getMap(), this);
+
+
+      });
+
+      return marker;
+    }
+
+  } 
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAzwzeFWZWXmHAiV8DRAW39cKibr8EQmvw&callback=initMap"
+    async defer></script>
+  </body>
+  </html>
